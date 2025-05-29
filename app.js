@@ -2,6 +2,8 @@ import express from 'express';
 import morgan from 'morgan';
 import updatesRouter from './routes/updates.js';
 import errorHandler from './controllers/errors.js';
+import https from 'node:https';
+import fs from 'node:fs';
 
 const app = express();
 app.use(morgan('combined'));
@@ -14,6 +16,21 @@ app.use('/api', updatesRouter);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`APK Update Server is running on port ${PORT}`);
-});
+
+if (process.env.HTTPS !== 'TRUE')
+  app.listen(PORT, () => {
+    console.log(`APK Update Server is running on port ${PORT} using HTTP`);
+  });
+else {
+  const options = {
+    key: fs.readFileSync(
+      `/etc/letsencrypt/live/${process.env.DOMAIN_NAME}/privkey.pem`,
+    ),
+    cert: fs.readFileSync(
+      `/etc/letsencrypt/live/${process.env.DOMAIN_NAME}/fullchain.pem`,
+    ),
+  };
+  https.createServer(options, app).listen(3000, () => {
+    console.log(`APK Update Server is running on port ${PORT} using HTTPS`);
+  });
+}
