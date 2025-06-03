@@ -9,6 +9,11 @@ router.get(
   UpdatesController.getFileInformation,
   UpdatesController.getVersionMetadata,
 );
+router.get(
+  '/updates/:version',
+  UpdatesController.getFileInformation,
+  UpdatesController.getVersionMetadata,
+);
 router.get('/updates/download/:version', UpdatesController.download);
 
 export default router;
