@@ -23,12 +23,8 @@ if (process.env.HTTPS !== 'TRUE')
   });
 else {
   const options = {
-    key: fs.readFileSync(
-      `/etc/letsencrypt/live/${process.env.DOMAIN_NAME}/privkey.pem`,
-    ),
-    cert: fs.readFileSync(
-      `/etc/letsencrypt/live/${process.env.DOMAIN_NAME}/fullchain.pem`,
-    ),
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH),
   };
   https.createServer(options, app).listen(3000, () => {
     console.log(`APK Update Server is running on port ${PORT} using HTTPS`);
