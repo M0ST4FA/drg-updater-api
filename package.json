@@ -8,7 +8,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --env-file=.env app.js"
+    "start": "nodemon --env-file=.env app.js",
+    "start-prod": "node --env-file=.env app.js"
   },
   "dependencies": {
     "express": "^5.1.0",
