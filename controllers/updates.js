@@ -4,10 +4,17 @@ import { AppError, catchAsync } from '../utils/AppError.js';
 import { createReadStream } from 'node:fs';
 import Metadata from '../models/Metadata.js';
 
-const getFileInformationCommon = async function (version) {
-  const filePath = path.join(process.cwd(), 'public/apks', version, 'app.apk');
+const fileInfoCache = new Map();
 
-  console.log(filePath);
+const getFileInformationCommon = async function (version) {
+  const cachedInfo = fileInfoCache.get(version);
+
+  if (cachedInfo) console.log('Cache hit');
+  else console.log('Cache miss');
+
+  if (cachedInfo) return cachedInfo;
+
+  const filePath = path.join(process.cwd(), 'public/apks', version, 'app.apk');
 
   let fileStats;
 
@@ -17,11 +24,15 @@ const getFileInformationCommon = async function (version) {
     throw new AppError('File not found', 400);
   }
 
-  return {
+  const info = {
     version,
     path: filePath,
     size: fileStats.size,
   };
+
+  fileInfoCache.set(version, info);
+
+  return info;
 };
 
 // Handlers
