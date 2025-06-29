@@ -1,7 +1,16 @@
+// TODO: Change how you handle internal errors
+
 class AppError {
   constructor(message, code) {
     this.message = message;
     this.code = code;
+    this.intentional = true;
+
+    // Assume it is an internal server error
+    if (!code) {
+      this.code = 500;
+      this.intentional = false;
+    }
 
     if (code < 500)
       // Code is between 400-499

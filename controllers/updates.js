@@ -4,24 +4,31 @@ import { AppError, catchAsync } from '../utils/AppError.js';
 import { createReadStream } from 'node:fs';
 import Metadata from '../models/Metadata.js';
 
-// Handlers
-const getFileInformation = catchAsync(async function (req, res, next) {
-  const version = req.params.version;
+const getFileInformationCommon = async function (version) {
   const filePath = path.join(process.cwd(), 'public/apks', version, 'app.apk');
+
+  console.log(filePath);
 
   let fileStats;
 
   try {
     fileStats = await fs.stat(filePath);
   } catch (error) {
-    return next(new AppError('File not found', 400));
+    throw new AppError('File not found', 400);
   }
 
-  res.file = {
+  return {
     version,
     path: filePath,
     size: fileStats.size,
   };
+};
+
+// Handlers
+const getFileInformation = catchAsync(async function (req, res, next) {
+  const version = req.params.version;
+
+  res.file = await getFileInformationCommon(version);
 
   next();
 });
@@ -56,31 +63,53 @@ const getLatestVersionMetadata = function (req, res, next) {
   }
 };
 
-const download = catchAsync(async function (req, res, next) {
-  const version = req.params.version;
-  const filePath = path.join(process.cwd(), 'public/apks', version, 'app.apk');
-
-  let fileStats;
+const downloadLatest = catchAsync(async function (req, res, next) {
+  const metadata = Metadata.getInstance();
 
   try {
-    fileStats = await fs.stat(filePath);
+    const latestVersionMetadata = metadata.getLatestVersionMetadata();
+
+    const version = latestVersionMetadata.version;
+
+    console.log(version);
+
+    const fileStats = await getFileInformationCommon(version);
+
+    const filePath = fileStats.path;
+    const size = fileStats.size;
+
+    res.writeHead(200, {
+      'content-type': 'application/vnd.android.package-archive',
+      'content-disposition': `attachment; filename="drg-v${version}"`,
+      'accept-ranges': 'none',
+      'content-length': size,
+    });
+
+    createReadStream(filePath).pipe(res);
   } catch (error) {
-    return next(new AppError('File not found', 400));
+    next(error);
   }
+});
+
+const download = function (req, res, next) {
+  const filePath = res.file.path;
+  const version = res.file.version;
+  const size = res.file.size;
 
   res.writeHead(200, {
     'content-type': 'application/vnd.android.package-archive',
-    'content-disposition': `attachment; filename="drg-apk-v${version}"`,
+    'content-disposition': `attachment; filename="drg-v${version}"`,
     'accept-ranges': 'none',
-    'content-length': fileStats.size,
+    'content-length': size,
   });
 
   createReadStream(filePath).pipe(res);
-});
+};
 
 export default {
   getFileInformation,
   getVersionMetadata,
   getLatestVersionMetadata,
+  downloadLatest,
   download,
 };
