@@ -10,9 +10,9 @@ router.get(
   UpdatesController.getVersionMetadata,
 );
 
-router.get('/updates/download/latest', UpdatesController.downloadLatest);
+router.get('/updates/downloads/latest', UpdatesController.downloadLatest);
 router.get(
-  '/updates/download/:version',
+  '/updates/downloads/:version',
   UpdatesController.getFileInformation,
   UpdatesController.download,
 );
