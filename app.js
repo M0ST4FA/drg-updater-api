@@ -9,7 +9,7 @@ app.use(morgan('combined'));
 
 app.use(express.static('public', { etag: true }));
 
-app.use('/api/releases', metadataRouter);
+app.use('/api/v1/releases', metadataRouter);
 app.use('/apks', downloadsRouter);
 
 // Global error handler
