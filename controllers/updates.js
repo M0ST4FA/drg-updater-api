@@ -14,7 +14,7 @@ const getFileInformationCommon = async function (version) {
 
   if (cachedInfo) return cachedInfo;
 
-  const filePath = path.join(process.cwd(), 'public/apks', version, 'app.apk');
+  const filePath = path.join(process.cwd(), `public/apks/drg-${version}.apk`);
 
   let fileStats;
 

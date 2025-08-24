@@ -19,9 +19,9 @@ class Metadata {
     this.#length = this.#metadata.length;
     this.#metadata.forEach(versionMetadata => {
       const domainName = process.env.DOMAIN_NAME;
-      const port = process.env.PORT;
+      const downloadsPort = process.env.DOWNLOADS_PORT;
 
-      versionMetadata.downloadUrl = `https://${domainName}:${port}/api/updates/download/${versionMetadata.version}`;
+      versionMetadata.downloadUrl = `https://${domainName}:${downloadsPort}/apks/${versionMetadata.version}`;
     });
   }
 

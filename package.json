@@ -8,10 +8,11 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --env-file=.env app.js",
-    "start-prod": "node --env-file=.env app.js"
+    "start:dev": "nodemon --env-file=.env app.js",
+    "start": "npx bun --env-file=.env app.js"
   },
   "dependencies": {
+    "bun": "^1.2.20",
     "express": "^5.1.0",
     "morgan": "^1.10.0"
   },

@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
-import updatesRouter from './routes/updates.js';
+import metadataRouter from './routes/metadata.js';
+import downloadsRouter from './routes/downloads.js';
 import errorHandler from './controllers/errors.js';
 
 const app = express();
@@ -8,7 +9,8 @@ app.use(morgan('combined'));
 
 app.use(express.static('public', { etag: true }));
 
-app.use('/', updatesRouter);
+app.use('/api/releases', metadataRouter);
+app.use('/apks', downloadsRouter);
 
 // Global error handler
 app.use(errorHandler);
